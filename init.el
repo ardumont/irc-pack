@@ -4,6 +4,7 @@
 
 ;;; Code:
 
+(require 'netrc)
 (require 'erc)
 (require 'erc-services)    ; for passwords
 
