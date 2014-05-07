@@ -4,9 +4,12 @@
 
 ;;; Code:
 
+(install-packs '(dash))
+
 (require 'netrc)
 (require 'erc)
 (require 'erc-services)    ; for passwords
+(require 'dash)
 
 (setq *IRC-PACK-CREDENTIALS-FILE* "~/.netrc")
 
