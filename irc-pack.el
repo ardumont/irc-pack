@@ -96,7 +96,5 @@ If it does return such entry, nil otherwise."
                           "Here is the needed content to setup to your need into '" *IRC-PACK-CREDENTIALS-FILE* "':\n"
                           "machine irc login <your-login> password <your-password> fullname <your-full-name-in-quote-if-need-be>"))))
 
-(irc-pack/load-pack!)
-
 (provide 'irc-pack)
 ;;; irc-pack.el ends here
