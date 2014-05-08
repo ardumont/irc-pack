@@ -15,19 +15,29 @@
 ;; activate option to keep the passphrase (it's preferable to use gpg-agent)
 (setq epa-file-cache-passphrase-for-symmetric-encryption t)
 
-(defvar *IRC-PACK-CREDENTIALS-FILE* "~/.authinfo.gpg" "Default credentials file. This could be a plain authinfo file too.")
+(defvar *IRC-PACK-CREDENTIALS-FILE* "~/.authinfo.gpg"
+  "Default credentials file.
+This could be a plain authinfo file too.")
 
-(defvar irc-pack/login    nil "user's login")
-(defvar irc-pack/password nil "user's credentials")
-(defvar irc-pack/fullname nil "user's fullname")
+(defvar irc-pack/login    nil
+  "User's login.")
 
-(defvar irc-pack/server "irc.freenode.net")
-(defvar irc-pack/port   6667)
+(defvar irc-pack/password nil
+  "User's credentials.")
+
+(defvar irc-pack/fullname nil
+  "User's fullname.")
+
+(defconst irc-pack/server "irc.freenode.net"
+  "IRC server")
+
+(defconst irc-pack/port  6667
+  "IRC server port")
 
 ;; ===================== setup functions
 
 (defun irc-pack/server-uri (server port)
-  "Compute the irc server uri"
+  "Compute the irc SERVER uri from the SERVER and the PORT."
   (format "%s:%s" server port))
 
 (defun irc-pack/log (str)
@@ -35,7 +45,9 @@
   (message "irc-pack - %s" str))
 
 (defun irc-pack/setup-possible-p (creds-file)
-  "Check if the setup is possible by checking the existence of the CREDS-FILE and that the entry 'irc' exists. If it does return such entry, nil otherwise."
+  "Check if the setup is possible.
+Check the existence of the CREDS-FILE and that the entry 'irc' exists.
+If it does return such entry, nil otherwise."
   (let ((parsed-file (netrc-parse creds-file)))
     (-when-let (irc-creds (and parsed-file ;; nil if the file does not exist
                                (netrc-machine parsed-file "irc")))
@@ -49,6 +61,7 @@
     (erc :server irc-pack/server :port irc-pack/port :nick irc-pack/login :full-name irc-pack/fullname)))
 
 (defun irc-pack/setup (irc-creds)
+  "Execute the setup from the IRC-CREDS."
   (let* ((login    (netrc-get irc-creds "login"))
          (password (netrc-get irc-creds "password"))
          (fullname (netrc-get irc-creds "fullname")))
