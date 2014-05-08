@@ -87,11 +87,16 @@ If it does return such entry, nil otherwise."
 
 ;; ===================== setup routine
 
-(-if-let (irc-creds (irc-pack/setup-possible-p *IRC-PACK-CREDENTIALS-FILE*))
-    (irc-pack/setup irc-creds)
-  (irc-pack/log (concat "You need to setup the credentials file " *IRC-PACK-CREDENTIALS-FILE* " for this to work.\n"
-                        "Here is the needed content to setup to your need into '" *IRC-PACK-CREDENTIALS-FILE* "':\n"
-                        "machine irc login <your-login> password <your-password> fullname <your-full-name-in-quote-if-need-be>")))
+(defun irc-pack/load-pack! ()
+  "(Re)load the irc-pack."
+  (interactive)
+  (-if-let (irc-creds (irc-pack/setup-possible-p *IRC-PACK-CREDENTIALS-FILE*))
+      (irc-pack/setup irc-creds)
+    (irc-pack/log (concat "You need to setup the credentials file " *IRC-PACK-CREDENTIALS-FILE* " for this to work.\n"
+                          "Here is the needed content to setup to your need into '" *IRC-PACK-CREDENTIALS-FILE* "':\n"
+                          "machine irc login <your-login> password <your-password> fullname <your-full-name-in-quote-if-need-be>"))))
+
+(irc-pack/load-pack!)
 
 (provide 'irc-pack)
 ;;; irc-pack.el ends here
