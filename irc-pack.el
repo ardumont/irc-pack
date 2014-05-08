@@ -4,6 +4,7 @@
 
 ;;; Code:
 
+(require 'install-packages-pack)
 (install-packs '(dash))
 
 (require 'netrc)
@@ -78,3 +79,6 @@
   (irc-pack/log (concat "You need to setup the credentials file " *IRC-PACK-CREDENTIALS-FILE* " for this to work.\n"
                         "Here is the needed content to setup to your need into '" *IRC-PACK-CREDENTIALS-FILE* "':\n"
                         "machine irc login <your-login> password <your-password> fullname <your-full-name-in-quote-if-need-be>")))
+
+(provide 'irc-pack)
+;;; irc-pack.el ends here
