@@ -76,7 +76,7 @@ If it does return such entry, nil otherwise."
           ;; don't show any of this
           ;; erc-hide-list '("JOIN" "PART" "QUIT" "NICK")
           erc-prompt-for-nickserv-password nil
-          erc-nickserv-passwords `((freenode ((,login ,password))))
+          erc-nickserv-passwords `((freenode ((,login . ,password))))
           ;; keep the credentials
           irc-pack/login login
           irc-pack/password password
