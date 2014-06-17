@@ -12,9 +12,6 @@
 (require 'erc-services)    ; for passwords
 (require 'dash)
 
-;; activate option to keep the passphrase (it's preferable to use gpg-agent)
-(setq epa-file-cache-passphrase-for-symmetric-encryption t)
-
 (defvar *IRC-PACK-CREDENTIALS-FILE* "~/.authinfo.gpg"
   "Default credentials file.
 This could be a plain authinfo file too.")
