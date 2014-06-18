@@ -26,10 +26,10 @@ This could be a plain authinfo file too.")
   "User's fullname.")
 
 (defconst irc-pack/server "irc.freenode.net"
-  "IRC server")
+  "IRC server.")
 
 (defconst irc-pack/port  6667
-  "IRC server port")
+  "IRC server port.")
 
 ;; ===================== setup functions
 
