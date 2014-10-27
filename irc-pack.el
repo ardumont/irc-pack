@@ -5,7 +5,7 @@
 ;;; Code:
 
 (require 'install-packages-pack)
-(install-packs '(dash))
+(install-packages-pack/install-packs '(dash))
 
 (require 'netrc)
 (require 'erc)
