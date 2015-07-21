@@ -34,10 +34,6 @@ This could be a plain authinfo file too.")
 
 ;; ===================== setup functions
 
-(defun irc-pack/server-uri (server port)
-  "Compute the irc SERVER uri from the SERVER and the PORT."
-  (format "%s:%s" server port))
-
 (defun irc-pack/log (&rest args)
   "Log the message ARGS in the mini-buffer."
   (apply #'message (format "IRC Pack - %s" (car args)) (cdr args)))
@@ -54,9 +50,13 @@ If it does return such entry, nil otherwise."
 (defun irc-pack/erc-start-or-switch ()
   "Connect to ERC, or switch to last active buffer."
   (interactive)
-  (if (get-buffer (irc-pack/server-uri irc-pack/server irc-pack/port)) ;; ERC already active?
+  (if (erc-buffer-list)
       (erc-track-switch-buffer 1) ;; yes: switch to last active
-    (erc :server irc-pack/server :port irc-pack/port :nick irc-pack/login :full-name irc-pack/fullname)))
+    (erc :server irc-pack/server
+         :port irc-pack/port
+         :nick irc-pack/login
+         :password irc-pack/password
+         :full-name irc-pack/fullname)))
 
 (defun irc-pack/setup (irc-creds)
   "Execute the setup from the IRC-CREDS."
@@ -76,7 +76,8 @@ If it does return such entry, nil otherwise."
      ;; don't show any of this
      ;; erc-hide-list '("JOIN" "PART" "QUIT" "NICK")
      erc-prompt-for-nickserv-password nil
-     erc-nickserv-passwords `((freenode ((,login . ,password))))
+     ;; erc-autojoin-channels-alist
+     ;; erc-nickserv-passwords `((freenode ((,login . ,password))))
      ;; keep the credentials
      irc-pack/login login
      irc-pack/password (or password "")
