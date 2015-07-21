@@ -5,31 +5,32 @@
 ;;; Code:
 
 (require 'install-packages-pack)
-(install-packages-pack/install-packs '(dash))
+(install-packages-pack/install-packs '(dash creds))
 
 (require 'netrc)
 (require 'erc)
 (require 'erc-services)    ; for passwords
 (require 'dash)
+(require 'creds)
 
-(defvar *IRC-PACK-CREDENTIALS-FILE* "~/.authinfo.gpg"
+(defcustom irc-pack-credentials-file "~/.authinfo.gpg"
   "Default credentials file.
 This could be a plain authinfo file too.")
 
-(defvar irc-pack/login    nil
+(defcustom irc-pack/login    nil
   "User's login.")
 
-(defvar irc-pack/password nil
+(defcustom irc-pack/password nil
   "User's credentials.")
 
-(defvar irc-pack/fullname nil
+(defcustom irc-pack/fullname nil
   "User's fullname.")
 
-(defconst irc-pack/server "irc.freenode.net"
-  "IRC server.")
+(defcustom irc-pack/server "localhost" ;; "irc.freenode.net"
+  "IRC server default.")
 
-(defconst irc-pack/port  6667
-  "IRC server port.")
+(defcustom irc-pack/port 6697 ;; 6667
+  "IRC server port default.")
 
 ;; ===================== setup functions
 
@@ -45,9 +46,9 @@ This could be a plain authinfo file too.")
   "Check if the setup is possible.
 Check the existence of the CREDS-FILE and that the entry 'irc' exists.
 If it does return such entry, nil otherwise."
-  (let ((parsed-file (netrc-parse creds-file)))
+  (let ((parsed-file (creds/read-lines creds-file)))
     (-when-let (irc-creds (and parsed-file ;; nil if the file does not exist
-                               (netrc-machine parsed-file "irc")))
+                               (creds/get parsed-file "irc")))
       irc-creds)))
 
 (defun irc-pack/erc-start-or-switch ()
@@ -59,9 +60,11 @@ If it does return such entry, nil otherwise."
 
 (defun irc-pack/setup (irc-creds)
   "Execute the setup from the IRC-CREDS."
-  (let* ((login    (netrc-get irc-creds "login"))
-         (password (netrc-get irc-creds "password"))
-         (fullname (netrc-get irc-creds "fullname")))
+  (let ((login           (creds/get-entry irc-creds "login"))
+        (password        (creds/get-entry irc-creds "password"))
+        (fullname        (creds/get-entry irc-creds "fullname"))
+        (irc-server      (creds/get-entry irc-creds "server"))
+        (irc-server-port (creds/get-entry irc-creds "port")))
     (irc-pack/log "Running irc-pack setup...")
     ;; activate modes
     (erc-services-mode 1)
@@ -76,8 +79,10 @@ If it does return such entry, nil otherwise."
      erc-nickserv-passwords `((freenode ((,login . ,password))))
      ;; keep the credentials
      irc-pack/login login
-     irc-pack/password password
-     irc-pack/fullname fullname)
+     irc-pack/password (or password "")
+     irc-pack/fullname fullname
+     irc-pack/server (or irc-server irc-pack/server)
+     irc-pack/port (or irc-server-port irc-pack/port))
     ;; add keybindings
     (irc-pack/log "Setup done!")))
 
@@ -86,11 +91,10 @@ If it does return such entry, nil otherwise."
 (defun irc-pack/load-pack! ()
   "(Re)load the irc-pack."
   (interactive)
-  (-if-let (irc-creds (irc-pack/setup-possible-p *IRC-PACK-CREDENTIALS-FILE*))
+  (-if-let (irc-creds (irc-pack/setup-possible-p irc-pack-credentials-file))
       (irc-pack/setup irc-creds)
-    (irc-pack/log (concat "You need to setup the credentials file " *IRC-PACK-CREDENTIALS-FILE* " for this to work.\n"
-                          "Here is the needed content to setup to your need into '" *IRC-PACK-CREDENTIALS-FILE* "':\n"
-                          "machine irc login <your-login> password <your-password> fullname <your-full-name-in-quote-if-need-be>"))))
+    (irc-pack/log "You need to setup the configuration file '%s' with the following content:
+machine irc server <irc-server> port <irc-server-port> login <your-login> password <your-password> fullname <your-full-name-in-quote-when-spaces-inside>" irc-pack-credentials-file)))
 
 (defvar irc-pack-mode-map
   (let ((map (make-sparse-keymap)))
