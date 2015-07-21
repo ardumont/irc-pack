@@ -1,7 +1,7 @@
 irc-pack
 =========
 
-A pack to setup one's irc credentials.
+A pack to 'securely' setup one's irc accounts.
 
 # Install
 
@@ -22,15 +22,27 @@ Add this snippet in your `prelude-packs.el`:
 ```
 # Setup
 
-Adding a line to the file `~/.netrc`:
+Adding a line to the file `~/.authinfo(.gpg)`:
 
 ```txt
-machine irc login nickname password your-password-for-this-account
+machine irc server <irc-server> port <irc-server-port> login <nickname> password <your-password-for-this-account>
 ```
 
-*Note* Do not change `machine irc`, this is static and used by this pack.
+*Note*
 
-Example:
+- `password` and `fullname` are optionals
+
+- Keep `machine irc`, this is the static key which is used to find information.
+
+## Example
+
+Connection through irc bouncer znc:
+
 ```txt
-machine irc login ardumont password your-password-for-this-account
+machine irc server my-znc-server port 5555 login nick password nick/freenode:pass fullname "Your full name"
+```
+
+Direct connection to freenode:
+```txt
+machine irc server irc.freenode.net port 6667 login nick password pass fullname "Your full name"
 ```
