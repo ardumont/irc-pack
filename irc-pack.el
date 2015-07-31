@@ -4,10 +4,6 @@
 
 ;;; Code:
 
-(require 'install-packages-pack)
-(install-packages-pack/install-packs '(dash creds))
-
-(require 'netrc)
 (require 'erc)
 (require 'erc-services)    ; for passwords
 (require 'dash)
@@ -17,28 +13,28 @@
   "Default credentials file.
 This could be a plain authinfo file too.")
 
-(defcustom irc-pack/login    nil
+(defcustom irc-pack-login    nil
   "User's login.")
 
-(defcustom irc-pack/password nil
+(defcustom irc-pack-password nil
   "User's credentials.")
 
-(defcustom irc-pack/fullname nil
+(defcustom irc-pack-fullname nil
   "User's fullname.")
 
-(defcustom irc-pack/server "localhost" ;; "irc.freenode.net"
+(defcustom irc-pack-server "localhost" ;; "irc.freenode.net"
   "IRC server default.")
 
-(defcustom irc-pack/port 6697 ;; 6667
+(defcustom irc-pack-port 6697 ;; 6667
   "IRC server port default.")
 
 ;; ===================== setup functions
 
-(defun irc-pack/log (&rest args)
+(defun irc-pack--log (&rest args)
   "Log the message ARGS in the mini-buffer."
   (apply #'message (format "IRC Pack - %s" (car args)) (cdr args)))
 
-(defun irc-pack/setup-possible-p (creds-file)
+(defun irc-pack-setup-possible-p (creds-file)
   "Check if the setup is possible.
 Check the existence of the CREDS-FILE and that the entry 'irc' exists.
 If it does return such entry, nil otherwise."
@@ -47,25 +43,25 @@ If it does return such entry, nil otherwise."
                                (creds/get parsed-file "irc")))
       irc-creds)))
 
-(defun irc-pack/erc-start-or-switch ()
+(defun irc-pack-erc-start-or-switch ()
   "Connect to ERC, or switch to last active buffer."
   (interactive)
   (if (erc-buffer-list)
       (erc-track-switch-buffer 1) ;; yes: switch to last active
-    (erc :server irc-pack/server
-         :port irc-pack/port
-         :nick irc-pack/login
-         :password irc-pack/password
-         :full-name irc-pack/fullname)))
+    (erc :server irc-pack-server
+         :port irc-pack-port
+         :nick irc-pack-login
+         :password irc-pack-password
+         :full-name irc-pack-fullname)))
 
-(defun irc-pack/setup (irc-creds)
+(defun irc-pack-setup (irc-creds)
   "Execute the setup from the IRC-CREDS."
   (let ((login           (creds/get-entry irc-creds "login"))
         (password        (creds/get-entry irc-creds "password"))
         (fullname        (creds/get-entry irc-creds "fullname"))
         (irc-server      (creds/get-entry irc-creds "server"))
         (irc-server-port (creds/get-entry irc-creds "port")))
-    (irc-pack/log "Running irc-pack setup...")
+    (irc-pack--log "Running irc-pack setup...")
     ;; activate modes
     (erc-services-mode 1)
     ;; check channels
@@ -79,28 +75,28 @@ If it does return such entry, nil otherwise."
      ;; erc-autojoin-channels-alist
      ;; erc-nickserv-passwords `((freenode ((,login . ,password))))
      ;; keep the credentials
-     irc-pack/login login
-     irc-pack/password (or password "")
-     irc-pack/fullname fullname
-     irc-pack/server (or irc-server irc-pack/server)
-     irc-pack/port (or irc-server-port irc-pack/port))
+     irc-pack-login login
+     irc-pack-password (or password "")
+     irc-pack-fullname fullname
+     irc-pack-server (or irc-server irc-pack-server)
+     irc-pack-port (or irc-server-port irc-pack-port))
     ;; add keybindings
-    (irc-pack/log "Setup done!")))
+    (irc-pack--log "Setup done!")))
 
 ;; ===================== setup routine
 
-(defun irc-pack/load-pack! ()
+(defun irc-pack-load-pack ()
   "(Re)load the irc-pack."
   (interactive)
-  (-if-let (irc-creds (irc-pack/setup-possible-p irc-pack-credentials-file))
-      (irc-pack/setup irc-creds)
-    (irc-pack/log "You need to setup the configuration file '%s' with the following content:
+  (-if-let (irc-creds (irc-pack-setup-possible-p irc-pack-credentials-file))
+      (irc-pack-setup irc-creds)
+    (irc-pack--log "You need to setup the configuration file '%s' with the following content:
 machine irc server <irc-server> port <irc-server-port> login <your-login> password <your-password> fullname <your-full-name-in-quote-when-spaces-inside>" irc-pack-credentials-file)))
 
 (defvar irc-pack-mode-map
   (let ((map (make-sparse-keymap)))
-    (define-key map (kbd "C-c i l") 'irc-pack/load-pack!)
-    (define-key map (kbd "C-c i c") 'irc-pack/erc-start-or-switch)
+    (define-key map (kbd "C-c i l") 'irc-pack-load-pack)
+    (define-key map (kbd "C-c i c") 'irc-pack-erc-start-or-switch)
     (define-key map (kbd "C-c i d") 'erc-quit-server)
     map)
   "Keymap for git-pack mode.")
