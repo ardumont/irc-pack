@@ -46,8 +46,8 @@ If it does return such entry, nil otherwise."
 (defun irc-pack-erc-start-or-switch ()
   "Connect to ERC, or switch to last active buffer."
   (interactive)
-  (if (erc-buffer-list)
-      (erc-track-switch-buffer 1) ;; yes: switch to last active
+  (-if-let (buffer (car (erc-buffer-list)))
+      (switch-to-buffer buffer)
     (erc :server irc-pack-server
          :port irc-pack-port
          :nick irc-pack-login
