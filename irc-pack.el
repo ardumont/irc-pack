@@ -25,7 +25,7 @@ This could be a plain authinfo file too.")
 (defcustom irc-pack-server "localhost" ;; "irc.freenode.net"
   "IRC server default.")
 
-(defcustom irc-pack-port 6697 ;; 6667
+(defcustom irc-pack-port 6667
   "IRC server port default.")
 
 ;; ===================== setup functions
