@@ -98,6 +98,7 @@ machine irc server <irc-server> port <irc-server-port> login <your-login> passwo
     (define-key map (kbd "C-c i l") 'irc-pack-load-pack)
     (define-key map (kbd "C-c i c") 'irc-pack-erc-start-or-switch)
     (define-key map (kbd "C-c i d") 'erc-quit-server)
+    (define-key map (kbd "C-c i L") (lambda () (interactive) (irc-pack--log "irc-buffers: %s" (erc-buffer-list))))
     map)
   "Keymap for git-pack mode.")
 
