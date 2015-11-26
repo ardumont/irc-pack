@@ -48,11 +48,11 @@ If it does return such entry, nil otherwise."
   (interactive)
   (-if-let (buffer (car (erc-buffer-list)))
       (switch-to-buffer buffer)
-    (erc :server irc-pack-server
-         :port irc-pack-port
-         :nick irc-pack-login
-         :password irc-pack-password
-         :full-name irc-pack-fullname)))
+    (erc-tls :server irc-pack-server
+             :port irc-pack-port
+             :nick irc-pack-login
+             :password irc-pack-password
+             :full-name irc-pack-fullname)))
 
 (defun irc-pack-setup (irc-creds)
   "Execute the setup from the IRC-CREDS."
