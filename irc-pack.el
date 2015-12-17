@@ -9,6 +9,19 @@
 (require 'dash)
 (require 'creds)
 
+;; default setup
+
+(defconst irc-pack-default-port 6667
+  "Default port connection.")
+
+(defconst irc-pack-default-server "localhost"
+  "Default server.")
+
+(defconst irc-pack-default-connection-type nil
+  "Default connection type.")
+
+;; user customization
+
 (defcustom irc-pack-credentials-file "~/.authinfo.gpg"
   "Default credentials file.
 This could be a plain authinfo file too.")
@@ -27,6 +40,9 @@ This could be a plain authinfo file too.")
 
 (defcustom irc-pack-port 6667
   "IRC server port default.")
+
+(defcustom irc-pack-connection-type nil
+  "IRC connection type, default to unsecure.")
 
 ;; ===================== setup functions
 
@@ -48,11 +64,12 @@ If it does return such entry, nil otherwise."
   (interactive)
   (-if-let (buffer (car (erc-buffer-list)))
       (switch-to-buffer buffer)
-    (erc-tls :server irc-pack-server
-             :port irc-pack-port
-             :nick irc-pack-login
-             :password irc-pack-password
-             :full-name irc-pack-fullname)))
+    (let ((conn-fn (if (null irc-pack-connection-type) 'erc 'erc-tls)))
+      (funcall conn-fn :server irc-pack-server
+               :port irc-pack-port
+               :nick irc-pack-login
+               :password irc-pack-password
+               :full-name irc-pack-fullname))))
 
 (defun irc-pack-setup (irc-creds)
   "Execute the setup from the IRC-CREDS."
@@ -60,7 +77,8 @@ If it does return such entry, nil otherwise."
         (password        (creds/get-entry irc-creds "password"))
         (fullname        (creds/get-entry irc-creds "fullname"))
         (irc-server      (creds/get-entry irc-creds "server"))
-        (irc-server-port (creds/get-entry irc-creds "port")))
+        (irc-server-port (creds/get-entry irc-creds "port"))
+        (irc-connection-type (creds/get-entry irc-creds "connection-type")))
     (irc-pack--log "Running irc-pack setup...")
     ;; activate modes
     (erc-services-mode 1)
@@ -78,8 +96,9 @@ If it does return such entry, nil otherwise."
      irc-pack-login login
      irc-pack-password (or password "")
      irc-pack-fullname fullname
-     irc-pack-server (or irc-server irc-pack-server)
-     irc-pack-port (or irc-server-port irc-pack-port))
+     irc-pack-server (or irc-server irc-pack-default-server)
+     irc-pack-port (or irc-server-port irc-pack-default-port)
+     irc-pack-connection-type (or irc-connection-type irc-pack-default-connection-type))
     ;; add keybindings
     (irc-pack--log "Setup done!")))
 
